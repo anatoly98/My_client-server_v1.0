@@ -1,72 +1,147 @@
+//This is srever//
+
 #define _WINSOCK_DEPRECATED_NO_WARNINGS 
+
 #define _CRT_SECURE_NO_WARNINGS 
 
+
+
 #pragma comment (lib, "ws2_32.lib") 
+
 #include <WinSock2.h> 
+
 #include <iostream> 
+
 #include <string> 
+
+#include "message_class.h"
+
 //#include <ws2tcpipt> 
+
+
 
 using namespace std;
 
+
+
 int main()
+
 {
-	WSAData wsaData;  // структура для иницилизации сокетов
-	WORD version = MAKEWORD(2, 1); // версия сокетов
-	int result = WSAStartup(version, &wsaData);// Функция WSAStartup инициализирует WinSock.  Если инициализация состоялась, то вернется нулевое значение. 
+
+	WSAData wsaData;  // СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РёРЅРёС†РёР»РёР·Р°С†РёРё СЃРѕРєРµС‚РѕРІ
+
+	WORD version = MAKEWORD(2, 1); // РІРµСЂСЃРёСЏ СЃРѕРєРµС‚РѕРІ
+
+	int result = WSAStartup(version, &wsaData);// Р¤СѓРЅРєС†РёСЏ WSAStartup РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ WinSock.  Р•СЃР»Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРѕСЃС‚РѕСЏР»Р°СЃСЊ, С‚Рѕ РІРµСЂРЅРµС‚СЃСЏ РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ. 
+
 	if (result != 0)
+
 	{
+
 		return 1;
+
 	}
-	
-        SOCKADDR_IN addr; // структура, чтобы указать адрес локальной или удаленной конечной точки, к которому осуществляется подключение сокета. 
 
-	int addrlen = sizeof(addr); // размер структуры для передачи в функцию 
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // IP-адрес 
+
+
+	SOCKADDR_IN addr; // СЃС‚СЂСѓРєС‚СѓСЂР°, С‡С‚РѕР±С‹ СѓРєР°Р·Р°С‚СЊ Р°РґСЂРµСЃ Р»РѕРєР°Р»СЊРЅРѕР№ РёР»Рё СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё, Рє РєРѕС‚РѕСЂРѕРјСѓ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ РїРѕРґРєР»СЋС‡РµРЅРёРµ СЃРѕРєРµС‚Р°. 
+
+
+
+	int addrlen = sizeof(addr); // СЂР°Р·РјРµСЂ СЃС‚СЂСѓРєС‚СѓСЂС‹ РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ С„СѓРЅРєС†РёСЋ 
+
+	addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // IP-Р°РґСЂРµСЃ 
+
 	addr.sin_port = htons(1111); // Port 
-	addr.sin_family = AF_INET; // Семейство адресов 
 
-	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL); // инициализация сокета для установки связи 
-	bind(sListen, (SOCKADDR*)&addr, sizeof(addr)); // Связывает сокет с конкретным адресом. 
-	listen(sListen, SOMAXCONN); // Подготавливает привязываемый сокет к принятию входящих соединений. 
+	addr.sin_family = AF_INET; // РЎРµРјРµР№СЃС‚РІРѕ Р°РґСЂРµСЃРѕРІ 
 
-	SOCKET newConnection; // инициализация сокета для передачи данных 
-	newConnection = accept(sListen, (SOCKADDR*)&addr, &addrlen); // Используется для принятия запроса на установление соединения от удаленного хоста. 
 
-	if (newConnection == 0) // если подключение неудачно 
+
+	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL); // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРѕРєРµС‚Р° РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё СЃРІСЏР·Рё 
+
+	bind(sListen, (SOCKADDR*)&addr, sizeof(addr)); // РЎРІСЏР·С‹РІР°РµС‚ СЃРѕРєРµС‚ СЃ РєРѕРЅРєСЂРµС‚РЅС‹Рј Р°РґСЂРµСЃРѕРј. 
+
+	listen(sListen, SOMAXCONN); // РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ РїСЂРёРІСЏР·С‹РІР°РµРјС‹Р№ СЃРѕРєРµС‚ Рє РїСЂРёРЅСЏС‚РёСЋ РІС…РѕРґСЏС‰РёС… СЃРѕРµРґРёРЅРµРЅРёР№. 
+
+
+
+	SOCKET newConnection; // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРѕРєРµС‚Р° РґР»СЏ РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… 
+
+	newConnection = accept(sListen, (SOCKADDR*)&addr, &addrlen); // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РїСЂРёРЅСЏС‚РёСЏ Р·Р°РїСЂРѕСЃР° РЅР° СѓСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃРѕРµРґРёРЅРµРЅРёСЏ РѕС‚ СѓРґР°Р»РµРЅРЅРѕРіРѕ С…РѕСЃС‚Р°. 
+
+
+
+	if (newConnection == 0) // РµСЃР»Рё РїРѕРґРєР»СЋС‡РµРЅРёРµ РЅРµСѓРґР°С‡РЅРѕ 
+
+
 
 	{
+
+
 
 		cout << "Failed to accept the client's connection." << endl;
 
+
+
 	}
 
-	else // если удачно подключениие 
+
+
+	else // РµСЃР»Рё СѓРґР°С‡РЅРѕ РїРѕРґРєР»СЋС‡РµРЅРёРёРµ 
+
+
 
 	{
+
+
+
 
 
 
 		cout << "Client Connected!" << endl;
 
-		char buffer[30];
 
-		recv(newConnection, buffer, sizeof(buffer), NULL); // функция для получения данных с подключенного сокета 
+		message MSG;
 
-		cout << buffer <<endl;												   // здесь нужно распечатать данные из buffer 
+		//char buffer[30];
+
+
+
+		recv(newConnection, (char*)&MSG, sizeof(message), NULL); // С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°РЅРЅС‹С… СЃ РїРѕРґРєР»СЋС‡РµРЅРЅРѕРіРѕ СЃРѕРєРµС‚Р° 
+
+		cout << MSG.getMSG()<<endl;
+
+		//cout << buffer << endl;												   // Р·РґРµСЃСЊ РЅСѓР¶РЅРѕ СЂР°СЃРїРµС‡Р°С‚Р°С‚СЊ РґР°РЅРЅС‹Рµ РёР· buffer 
+
+
+
 
 
 	}
 
-	closesocket(sListen); //закрывает одну из сторон соединения
 
-	closesocket(newConnection); //закрывает одну из сторон соединения
 
-	WSACleanup();// завершает использование данного DLL и прерывает обращение к функциям WinSock
+	closesocket(sListen); //Р·Р°РєСЂС‹РІР°РµС‚ РѕРґРЅСѓ РёР· СЃС‚РѕСЂРѕРЅ СЃРѕРµРґРёРЅРµРЅРёСЏ
+
+
+
+	closesocket(newConnection); //Р·Р°РєСЂС‹РІР°РµС‚ РѕРґРЅСѓ РёР· СЃС‚РѕСЂРѕРЅ СЃРѕРµРґРёРЅРµРЅРёСЏ
+
+
+
+	WSACleanup();// Р·Р°РІРµСЂС€Р°РµС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РґР°РЅРЅРѕРіРѕ DLL Рё РїСЂРµСЂС‹РІР°РµС‚ РѕР±СЂР°С‰РµРЅРёРµ Рє С„СѓРЅРєС†РёСЏРј WinSock
+
+
+
 
 
 	system("pause");
 
+
+
 	return 0;
+
+
 
 }
