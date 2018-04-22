@@ -1,75 +1,153 @@
+// This is client //
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
+
+
 #pragma comment(lib,"ws2_32.lib")
+
+
 
 #include <WinSock2.h>
 
+
+
 #include <iostream>
 
+
+
 #include <string>
+#include "message_class.h"
+
+
 
 using namespace std;
 
+
+
 int main()
+
+
 
 {
 
-	
 
-	WSAData wsaData; // структура для иницилизации сокетов
 
-	WORD version = MAKEWORD(2, 1); // версия сокетов
 
-	if (WSAStartup(version, &wsaData) != 0) // Функция WSAStartup инициализирует WinSock.  Если инициализация состоялась, то вернется нулевое значение. 
+
+
+
+	WSAData wsaData; // СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РёРЅРёС†РёР»РёР·Р°С†РёРё СЃРѕРєРµС‚РѕРІ
+
+
+
+	WORD version = MAKEWORD(2, 1); // РІРµСЂСЃРёСЏ СЃРѕРєРµС‚РѕРІ
+
+
+
+	if (WSAStartup(version, &wsaData) != 0) // Р¤СѓРЅРєС†РёСЏ WSAStartup РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ WinSock.  Р•СЃР»Рё РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРѕСЃС‚РѕСЏР»Р°СЃСЊ, С‚Рѕ РІРµСЂРЅРµС‚СЃСЏ РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ. 
+
+
 
 	{
 
-		cout << "Winsock startup failed"<<endl;
+
+
+		cout << "Winsock startup failed" << endl;
+
 		system("pause");
+
 		return 1;
+
+
 
 	}
 
 
 
-	SOCKADDR_IN addr;  // структура, чтобы указать адрес локальной или удаленной конечной точки, к которому осуществляется подключение сокета. 
 
-	int sizeofaddr = sizeof(addr); // размер структуры для передачи в функцию 
 
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // IP-адрес этой точки
+
+
+	SOCKADDR_IN addr;  // СЃС‚СЂСѓРєС‚СѓСЂР°, С‡С‚РѕР±С‹ СѓРєР°Р·Р°С‚СЊ Р°РґСЂРµСЃ Р»РѕРєР°Р»СЊРЅРѕР№ РёР»Рё СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё, Рє РєРѕС‚РѕСЂРѕРјСѓ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ РїРѕРґРєР»СЋС‡РµРЅРёРµ СЃРѕРєРµС‚Р°. 
+
+
+
+	int sizeofaddr = sizeof(addr); // СЂР°Р·РјРµСЂ СЃС‚СЂСѓРєС‚СѓСЂС‹ РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ С„СѓРЅРєС†РёСЋ 
+
+
+
+	addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // IP-Р°РґСЂРµСЃ СЌС‚РѕР№ С‚РѕС‡РєРё
+
+
 
 	addr.sin_port = htons(1111); //Port = 1111
 
-	addr.sin_family = AF_INET; // Семейство адресов 
+
+
+	addr.sin_family = AF_INET; // РЎРµРјРµР№СЃС‚РІРѕ Р°РґСЂРµСЃРѕРІ 
 
 
 
 
-	SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL); // инициализация сокета для передачи данных
 
-	if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) // инициализирует соединение со стороны указаннного сокета
+
+
+
+
+	SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL); // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРѕРєРµС‚Р° РґР»СЏ РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С…
+
+
+
+	if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) // РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ СЃРѕРµРґРёРЅРµРЅРёРµ СЃРѕ СЃС‚РѕСЂРѕРЅС‹ СѓРєР°Р·Р°РЅРЅРЅРѕРіРѕ СЃРѕРєРµС‚Р°
+
+
 
 	{
 
-		cout << "Failed to Connect"<<endl;
+
+
+		cout << "Failed to Connect" << endl;
+
 		system("pause");
+
 		return 1;
+
+
 
 	}
 
+
+
 	cout << "Connected!" << endl;
 
-    char b[] = "test message";
 
-    send(Connection, b, 30, NULL); // функция для передачи
 
-    system("pause");
+	message MSG;
+	
+	char junk[255];
+	cin >> junk;
+	MSG.setMSG(junk);
 
-    closesocket(Connection); //закрывает одну из сторон соединения
+   
+    send(Connection, (char*)&MSG, sizeof(message), NULL);
 
-	WSACleanup(); // завершает использование данного DLL и прерывает обращение к функциям WinSock
+
+
+	system("pause");
+
+
+
+	closesocket(Connection); //Р·Р°РєСЂС‹РІР°РµС‚ РѕРґРЅСѓ РёР· СЃС‚РѕСЂРѕРЅ СЃРѕРµРґРёРЅРµРЅРёСЏ
+
+
+
+	WSACleanup(); // Р·Р°РІРµСЂС€Р°РµС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РґР°РЅРЅРѕРіРѕ DLL Рё РїСЂРµСЂС‹РІР°РµС‚ РѕР±СЂР°С‰РµРЅРёРµ Рє С„СѓРЅРєС†РёСЏРј WinSock
+
+
 
 	return 0;
+
+
 
 }
